@@ -40,7 +40,6 @@ async function loadStations(url) {
 
     // Wetterstationen mit Icons und Popups
     L.geoJSON(jsondata, {
-        attribution: "Datenquelle: <a href='https://data.wien.gv.at'> Stadt Wien </a>",
         pointToLayer: function (feature, latlng) {
             return L.marker(latlng, {
                 icon: L.icon({
@@ -54,10 +53,7 @@ async function loadStations(url) {
         onEachFeature: function (feature, layer) {
             //console.log(feature.properties);
             layer.bindPopup(`
-                <img src="${feature.properties.THUMBNAIL}" alt="*">
-                <h4>${feature.properties.NAME}<h4>
-                <adress>${feature.properties.ADRESSE}</adress>
-                <a href="${feature.properties.WEITERE_INF}" target="wien">Webseite</a>    
+                <h4>${feature.properties.name} (${feature.geometry.coordinates[2]}m)</h4> 
                 `);
         }
     }).addTo(overlays.stations);
