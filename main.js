@@ -81,14 +81,14 @@ async function loadStations(url) {
 
 loadStations("https://static.avalanche.report/weather_stations/stations.geojson");
 
-function showTemperature(jsondata){
+function showTemperature(jsondata) {
     L.geoJSON(jsondata, {
-        filter: function(feature){
-            if (feature.properties.LT > -50 && feature.properties.LT < 50){
+        filter: function (feature) {
+            if (feature.properties.LT > -50 && feature.properties.LT < 50) {
                 return true;
             }
         },
-        pointToLayer: function(feature, latlng) {
+        pointToLayer: function (feature, latlng) {
             let color = getColor(feature.properties.LT, COLORS.temperature);
             return L.marker(latlng, {
                 icon: L.divIcon({
@@ -100,14 +100,14 @@ function showTemperature(jsondata){
     }).addTo(overlays.temperature);
 }
 
-function showWind(jsondata){
+function showWind(jsondata) {
     L.geoJSON(jsondata, {
-        filter: function(feature){
-            if (feature.properties.WG >= 0 && feature.properties.WG < 1000){
+        filter: function (feature) {
+            if (feature.properties.WG >= 0 && feature.properties.WG < 1000) {
                 return true;
             }
         },
-        pointToLayer: function(feature, latlng) {
+        pointToLayer: function (feature, latlng) {
             let color = getColor(feature.properties.WG, COLORS.wind);
             return L.marker(latlng, {
                 icon: L.divIcon({
@@ -119,14 +119,14 @@ function showWind(jsondata){
     }).addTo(overlays.wind);
 }
 
-function showSnow(jsondata){
+function showSnow(jsondata) {
     L.geoJSON(jsondata, {
-        filter: function(feature){
-            if (feature.properties.HS > 0 && feature.properties.HS < 1000){
+        filter: function (feature) {
+            if (feature.properties.HS > 0 && feature.properties.HS < 1000) {
                 return true;
             }
         },
-        pointToLayer: function(feature, latlng) {
+        pointToLayer: function (feature, latlng) {
             let color = getColor(feature.properties.HS, COLORS.snow);
             return L.marker(latlng, {
                 icon: L.divIcon({
@@ -138,27 +138,53 @@ function showSnow(jsondata){
     }).addTo(overlays.snow);
 }
 
-function showDirection(jsondata){
+function showDirection(jsondata) {
     L.geoJSON(jsondata, {
-        filter: function(feature){
-            if (feature.properties.WG > 0 && feature.properties.WG < 1000){
+        filter: function (feature) {
+            if (feature.properties.WG > 0 && feature.properties.WG < 1000) {
                 return true;
             }
         },
-        pointToLayer: function(feature, latlng) {
+        pointToLayer: function (feature, latlng) {
             let color = getColor(feature.properties.WG, COLORS.direction);
             return L.marker(latlng, {
                 icon: L.divIcon({
                     className: "aws-div-icon",
-                    html: `<span style="background-color:${color}">${feature.properties.WG.toFixed(1)}</span>`
+                    html: `<span style="background-color:${color}">${feature.properties.WR.toFixed(1)}</span>`
                 }),
             })
         },
     }).addTo(overlays.direction);
 }
 
+
+
+
+
+
+
+// Change default options
+L.control.rainviewer({
+    position: 'bottomleft',
+    nextButtonText: '>',
+    playStopButtonText: 'Play/Stop',
+    prevButtonText: '<',
+    positionSliderLabelText: "Hour:",
+    opacitySliderLabelText: "Opacity:",
+    animationInterval: 500,
+    opacity: 0.5
+}).addTo(map);
+
+
+
+
+
+
+
+
+
 function getColor(value, ramp) {
-    for (let rule of ramp){
+    for (let rule of ramp) {
         if (value >= rule.min && value < rule.max) {
             return rule.color;
         }
