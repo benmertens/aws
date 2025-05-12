@@ -14,7 +14,9 @@ let map = L.map("map").setView([ibk.lat, ibk.lng], ibk.zoom);
 let overlays = {
     stations: L.featureGroup(),
     temperature: L.featureGroup(),
-    wind: L.featureGroup().addTo(map),
+    wind: L.featureGroup(),
+    snow: L.featureGroup(),
+    direction: L.featureGroup().addTo(map),
 }
 
 // Layer control
@@ -30,6 +32,8 @@ L.control.layers({
     "Wetterstationen": overlays.stations,
     "Temperatur": overlays.temperature,
     "Windgeschwindigkeit": overlays.wind,
+    "Schneehöhen": overlays.snow,
+    "Windrichtungen und Windgeschwindigkeiten": overlays.direction,
 }).addTo(map);
 
 // Maßstab
@@ -71,6 +75,7 @@ async function loadStations(url) {
     }).addTo(overlays.stations)
     showTemperature(jsondata);
     showWind(jsondata);
+    showSnow(jsondata);
 }
 
 loadStations("https://static.avalanche.report/weather_stations/stations.geojson");
@@ -106,12 +111,30 @@ function showWind(jsondata){
             return L.marker(latlng, {
                 icon: L.divIcon({
                     className: "aws-div-icon",
-                    html: `<span style="background-color:${color}">${feature.properties.WG.toFixed(1)}km/h</span>`,
-                })
+                    html: `<span style="background-color:${color}">${feature.properties.WG.toFixed(1)}km/h</span>`
+                }),
             })
-        }
+        },
     }).addTo(overlays.wind);
+}
 
+function showSnow(jsondata){
+    L.geoJSON(jsondata, {
+        filter: function(feature){
+            if (feature.properties.HS > 0 && feature.properties.HS < 1000){
+                return true;
+            }
+        },
+        pointToLayer: function(feature, latlng) {
+            let color = getColor(feature.properties.HS, COLORS.snow);
+            return L.marker(latlng, {
+                icon: L.divIcon({
+                    className: "aws-div-icon",
+                    html: `<span style="background-color:${color}">${feature.properties.HS.toFixed(1)}cm</span>`
+                }),
+            })
+        },
+    }).addTo(overlays.snow);
 }
 
 function getColor(value, ramp) {
