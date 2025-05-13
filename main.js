@@ -10,6 +10,18 @@ let ibk = {
 // Karte initialisieren
 let map = L.map("map").setView([ibk.lat, ibk.lng], ibk.zoom);
 
+// Change default options
+L.control.rainviewer({
+    position: 'bottomleft',
+    nextButtonText: '>',
+    playStopButtonText: 'Play/Stop',
+    prevButtonText: '<',
+    positionSliderLabelText: "Hour:",
+    opacitySliderLabelText: "Opacity:",
+    animationInterval: 500,
+    opacity: 0.5
+}).addTo(map);
+
 // thematische Layer
 let overlays = {
     stations: L.featureGroup(),
@@ -122,7 +134,7 @@ function showWind(jsondata) {
 function showSnow(jsondata) {
     L.geoJSON(jsondata, {
         filter: function (feature) {
-            if (feature.properties.HS > 0 && feature.properties.HS < 1000) {
+            if (feature.properties.HS > 0 && feature.properties.HS < 2000) {
                 return true;
             }
         },
@@ -138,50 +150,38 @@ function showSnow(jsondata) {
     }).addTo(overlays.snow);
 }
 
+function getdegreetoText(degrees) {
+    if (degrees >= 337.5 || degrees < 22.5) return "N";
+    if (degrees >= 22.5 && degrees < 67.5) return "NO";
+    if (degrees >= 67.5 && degrees < 112.5) return "O";
+    if (degrees >= 112.5 && degrees < 157.5) return "SO";
+    if (degrees >= 157.5 && degrees < 202.5) return "S";
+    if (degrees >= 202.5 && degrees < 247.5) return "SW";
+    if (degrees >= 247.5 && degrees < 292.5) return "W";
+    if (degrees >= 292.5 && degrees < 337.5) return "NW";
+    return "-";
+}
+
 function showDirection(jsondata) {
     L.geoJSON(jsondata, {
         filter: function (feature) {
-            if (feature.properties.WG > 0 && feature.properties.WG < 1000) {
+            if (feature.properties.WR > 0 && feature.properties.WR < 1000) {
                 return true;
             }
         },
         pointToLayer: function (feature, latlng) {
-            let color = getColor(feature.properties.WG, COLORS.direction);
+            let color = getColor(feature.properties.WG, COLORS.wind);
+            let windrichtung = feature.properties.WR;
+            let degreetoText = getdegreetoText(windrichtung);
             return L.marker(latlng, {
                 icon: L.divIcon({
                     className: "aws-div-icon",
-                    html: `<span style="background-color:${color}">${feature.properties.WR.toFixed(1)}</span>`
+                    html: `<span style="background-color:${color}">${degreetoText}</span>`
                 }),
             })
         },
     }).addTo(overlays.direction);
 }
-
-
-
-
-
-
-
-// Change default options
-L.control.rainviewer({
-    position: 'bottomleft',
-    nextButtonText: '>',
-    playStopButtonText: 'Play/Stop',
-    prevButtonText: '<',
-    positionSliderLabelText: "Hour:",
-    opacitySliderLabelText: "Opacity:",
-    animationInterval: 500,
-    opacity: 0.5
-}).addTo(map);
-
-
-
-
-
-
-
-
 
 function getColor(value, ramp) {
     for (let rule of ramp) {
