@@ -62,7 +62,7 @@ footer nav {
         -1px -1px 0 white,
         -1px 1px 0 white,
         1px -1px 0 white,
-        1px 1px 0 white,
+        1px 1px 0 white;
 }
 
 .aws-div-icon-wind span {
@@ -72,8 +72,8 @@ footer nav {
     display: inline-block;
     padding: 0.5em;
     text-shadow:
-        -1px -1px 0 white,
-        -1px 1px 0 white,
-        1px -1px 0 white,
-        1px 1px 0 white,
+        -1px -1px 0 black,
+        -1px 1px 0 black,
+        1px -1px 0 black,
+        1px 1px 0 black;
 }
